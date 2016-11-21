@@ -1,57 +1,61 @@
-#include <itkRGBPixel.h>
+#include <itkRGBAPixel.h>
 #include <itkVector.h>
 #include <iostream>
 #include <itkImage.h>
 #include <itkImageRegionIterator.h>
 
-template<typename ComponentType> void FillAndPrintRGB(int intsize, std::string name)
+template<typename ComponentType> void FillAndTestRGBA(int intsize, std::string name)
 {
-  typedef itk::RGBPixel<ComponentType> RGBPixelType;
-  RGBPixelType rgbPixel;
-  if(sizeof(rgbPixel) != sizeof(ComponentType)*3)
+  typedef itk::RGBAPixel<ComponentType> RGBAPixelType;
+  RGBAPixelType rgbaPixel;
+  if(sizeof(rgbaPixel) != sizeof(ComponentType)*4)
   {
-    std::cerr << "sizeof(rgbPixel): " << sizeof(rgbPixel)
+    std::cerr << "sizeof(rgbaPixel): " << sizeof(rgbaPixel)
               << "  sizeof(ComponentType)*3: " << sizeof(ComponentType)*3 << std::endl;
-    throw(std::string("RGB: Wrong pixel size:")+name);
+    throw(std::string("RGBA: Wrong pixel size:")+name);
   }
-  typedef itk::Image<RGBPixelType,3> RGBImageType;
-  typename RGBImageType::Pointer rgbImage = RGBImageType::New();
-  typename RGBImageType::SizeType rgbsize;
-  rgbsize.Fill(intsize);
-  rgbImage->SetRegions(rgbsize);
-  rgbImage->Allocate();
-  itk::ImageRegionIterator<RGBImageType> it(rgbImage,rgbImage->GetLargestPossibleRegion());
+  typedef itk::Image<RGBAPixelType,3> RGBAImageType;
+  typename RGBAImageType::Pointer rgbaImage = RGBAImageType::New();
+  typename RGBAImageType::SizeType rgbasize;
+  rgbasize.Fill(intsize);
+  rgbaImage->SetRegions(rgbasize);
+  rgbaImage->Allocate();
+  itk::ImageRegionIterator<RGBAImageType> it(rgbaImage,rgbaImage->GetLargestPossibleRegion());
   ComponentType val=0;
   for(it.GoToBegin(); !it.IsAtEnd();++it)
   {
-    rgbPixel.SetRed(val);
-    rgbPixel.SetGreen(val+1);
-    rgbPixel.SetBlue(val+2);
-    it.Set(rgbPixel);
-    val+=3;
+    rgbaPixel.SetRed(val);
+    rgbaPixel.SetGreen(val+1);
+    rgbaPixel.SetBlue(val+2);
+    rgbaPixel.SetAlpha(val+3);
+    it.Set(rgbaPixel);
+    val+=4;
   }
-  ComponentType* ptr = reinterpret_cast<ComponentType*>(rgbImage->GetBufferPointer());
-  for(int ii =0; ii < rgbsize[0]*rgbsize[1]*rgbsize[2];ii++)
+  ComponentType* ptr = reinterpret_cast<ComponentType*>(rgbaImage->GetBufferPointer());
+  for(int ii =0; ii < rgbasize[0]*rgbasize[1]*rgbasize[2];ii++)
   {
-    ComponentType val_1 = *(ptr+ii*3);
-    ComponentType val_2 = *(ptr+ii*3+1);
-    ComponentType val_3 = *(ptr+ii*3+2);
+    ComponentType val_1 = *(ptr+ii*4);
+    ComponentType val_2 = *(ptr+ii*4+1);
+    ComponentType val_3 = *(ptr+ii*4+2);
+    ComponentType val_4 = *(ptr+ii*4+3);
    if( static_cast<unsigned long>(val_1) +1 != static_cast<unsigned long>(val_2)
-    || static_cast<unsigned long>(val_1)+2 != static_cast<unsigned long>(val_3))
+    || static_cast<unsigned long>(val_1)+2 != static_cast<unsigned long>(val_3)
+    || static_cast<unsigned long>(val_1)+3 != static_cast<unsigned long>(val_4))
    {
      std::cerr<<"val_1:"<<static_cast<double>(val_1)<<std::endl;
      std::cerr<<"val_2:"<<static_cast<double>(val_2)<<std::endl;
      std::cerr<<"val_3:"<<static_cast<double>(val_3)<<std::endl;
-     throw(std::string("RGB: Wrong value:")+name);
+     std::cerr<<"val_4:"<<static_cast<double>(val_4)<<std::endl;
+     throw(std::string("RGBA: Wrong value:")+name);
    }
   }
 }
 
-template<typename ComponentType> void FillAndPrintRGB(std::string name, size_t max)
+template<typename ComponentType> void FillAndTestRGBA(std::string name, size_t max)
 {
   for( size_t ii = 1; ii < max ; ii++ )
   {
-    FillAndPrintRGB<ComponentType>(ii, name);
+    FillAndTestRGBA<ComponentType>(ii, name);
   }
 }
 
@@ -116,18 +120,18 @@ int main(int argc, char* argv[])
 {
   try
   {
-    FillAndPrintRGB<double>("double",100);
-    FillAndPrintRGB<float>("float",100);
-    FillAndPrintRGB<unsigned char>("unsigned char",4);
-    FillAndPrintRGB<char>("char",3);
-    FillAndPrintRGB<short>("short",3);
-    FillAndPrintRGB<unsigned short>("unsigned short",3);
-    FillAndPrintRGB<unsigned int>("unsigned int",10);
-    FillAndPrintRGB<signed int>("signed int",10);
-    FillAndPrintRGB<long>("long",10);
-    FillAndPrintRGB<unsigned long>("unsigned long",10);
-    FillAndPrintRGB<long long>("long long",10);
-    FillAndPrintRGB<unsigned long long>("unsigned long long",10);
+    FillAndTestRGBA<double>("double",100);
+    FillAndTestRGBA<float>("float",100);
+    FillAndTestRGBA<unsigned char>("unsigned char",4);
+    FillAndTestRGBA<char>("char",3);
+    FillAndTestRGBA<short>("short",3);
+    FillAndTestRGBA<unsigned short>("unsigned short",3);
+    FillAndTestRGBA<unsigned int>("unsigned int",10);
+    FillAndTestRGBA<signed int>("signed int",10);
+    FillAndTestRGBA<long>("long",10);
+    FillAndTestRGBA<unsigned long>("unsigned long",10);
+    FillAndTestRGBA<long long>("long long",10);
+    FillAndTestRGBA<unsigned long long>("unsigned long long",10);
     FillAndTestVectorImages<double, 10>("double", 10);
     FillAndTestVectorImages<float, 10>("float", 10);
     FillAndTestVectorImages<signed char, 3>("signed char", 3);
