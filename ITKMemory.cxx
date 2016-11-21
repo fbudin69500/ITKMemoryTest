@@ -4,7 +4,7 @@
 #include <itkImage.h>
 #include <itkImageRegionIterator.h>
 
-template<typename ComponentType> int FillAndPrintRGB(int intsize, std::string name)
+template<typename ComponentType> void FillAndPrintRGB(int intsize, std::string name)
 {
   typedef itk::RGBPixel<ComponentType> RGBPixelType;
   RGBPixelType rgbPixel;
@@ -47,7 +47,7 @@ template<typename ComponentType> int FillAndPrintRGB(int intsize, std::string na
   }
 }
 
-template<typename ComponentType> int FillAndPrintRGB(std::string name, size_t max)
+template<typename ComponentType> void FillAndPrintRGB(std::string name, size_t max)
 {
   for( size_t ii = 1; ii < max ; ii++ )
   {
@@ -58,7 +58,7 @@ template<typename ComponentType> int FillAndPrintRGB(std::string name, size_t ma
 
 
 template<typename ComponentType,int SizeVec>
-int FillAndTestVectorImages(unsigned long size_im, std::string name)
+void FillAndTestVectorImages(unsigned long size_im, std::string name)
 {
   typedef itk::Vector<ComponentType,SizeVec> VectorType;
   VectorType vectorPixel;
@@ -103,7 +103,7 @@ int FillAndTestVectorImages(unsigned long size_im, std::string name)
 }
 
 template<typename ComponentType, int VecSize>
-int FillAndTestVectorImages(std::string name, size_t max)
+void FillAndTestVectorImages(std::string name, size_t max)
 {
   for( size_t ii = 1; ii < max ; ii++ )
   {
